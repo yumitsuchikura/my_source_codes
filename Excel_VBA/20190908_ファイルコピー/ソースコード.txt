@@ -1,0 +1,95 @@
+Sub cmd_test()
+'コマンドプロンプトを使うための変数
+Dim wsh As New IWshRuntimeLibrary.WshShell
+Dim result As WshExec
+ 
+Dim cmd As String
+Dim i, row, maxrow As Integer
+Dim myRng As Range
+
+Set myRng = Columns(1).Find("コピー元")
+row = myRng.row + 1
+maxrow = Cells(Rows.Count, 1).End(xlUp).row
+
+'実行したいコマンド
+cmd = "copy "
+
+'コマンドを実行
+For i = row To maxrow
+    wsh.Run "%ComSpec% /c " & cmd & ThisWorkbook.Worksheets("コピー").Cells(i, 1).Value & " " & ThisWorkbook.Worksheets("コピー").Cells(i, 2).Value, 0, True
+Next
+ 
+Set result = Nothing
+Set wsh = Nothing
+
+MsgBox ("完了")
+
+End Sub
+
+Sub cmd_test3()
+'コマンドプロンプトを使うためのオブジェクト
+Dim wsh As New IWshRuntimeLibrary.WshShell
+'コマンド結果を格納する変数
+Dim result As WshExec
+
+Dim filedata() As String
+Dim cmd As String
+Dim i, row, maxrow As Integer
+Dim myRng As Range
+
+Set myRng = Columns(1).Find("コピー元")
+row = myRng.row + 1
+maxrow = Cells(Rows.Count, 1).End(xlUp).row
+ 
+'実行したいコマンド
+cmd = "copy "
+
+'コマンドを実行
+For i = row To maxrow
+    Set result = wsh.Exec("%ComSpec% /c " & cmd & ThisWorkbook.Worksheets("コピー").Cells(i, 1).Value & " " & ThisWorkbook.Worksheets("コピー").Cells(i, 2).Value)
+    'コマンドの実行が終わるまで待機
+    Do While result.Status = 0
+        DoEvents
+    Loop
+Next
+ 
+Set result = Nothing
+Set wsh = Nothing
+
+MsgBox ("完了")
+
+End Sub
+
+Sub cmd_test2()
+'コマンドプロンプトを使うためのオブジェクト
+Dim wsh As New IWshRuntimeLibrary.WshShell
+'コマンド結果を格納する変数
+Dim result As WshExec
+ 
+Dim cmd As String
+Dim filedata() As String
+Dim i As Integer
+ 
+'実行したいコマンド
+cmd = "dir C:\Users\Yumi\Desktop\プログラミング /B"
+ 
+'コマンドを実行
+Set result = wsh.Exec("%ComSpec% /c " & cmd)
+'コマンドの実行が終わるまで待機
+Do While result.Status = 0
+    DoEvents
+Loop
+ 
+'結果を改行区切りで配列へ格納
+filedata = Split(result.StdOut.ReadAll, vbCrLf)
+ 
+'A1から順番に結果を書き込む
+i = 1
+For Each filenm In filedata
+    Cells(i, 3).Value = filenm
+    i = i + 1
+Next
+ 
+Set result = Nothing
+Set wsh = Nothing
+End Sub
