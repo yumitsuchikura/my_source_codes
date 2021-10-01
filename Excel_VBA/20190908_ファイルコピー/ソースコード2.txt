@@ -1,0 +1,54 @@
+'コピー元パスに指定したモジュールを、コピー先パスにコピーするためのマクロ
+'VBA画面　→　ツール　→　参照設定で「Windows Script Host Object Model」にチェックを入れないとWshShellのエラーが発生するので注意
+Sub copyM()
+    Dim obj As WshShell
+    Dim sPath, sParam1, sParam2, sParam3 As String
+    Dim execSht As Worksheet
+    Dim first_row, last_row As Integer
+    Dim regex As Object
+    Dim matches, match As Variant
+    
+    '正規表現を使用するための設定
+    '「regex.Global = True」は1つの文字列から正規表現のマッチする箇所を複数取得したい場合に設定する
+    '(今回は複数取得しないが単数取得のやり方がわからないのでこうしている)
+    Set regex = CreateObject("VBScript.RegExp")
+    regex.Pattern = "(.+\\)"
+    regex.Global = True
+
+    '「実行」シートオブジェクトの生成
+    Set execSht = ThisWorkbook.Worksheets("実行")
+    
+    With execSht
+    
+        '一行目の行数を取得
+        first_row = .Columns(1).Find("コピー元パス").Row + 1
+    
+        '最終行の行数を取得
+        last_row = .Cells(Rows.Count, 1).End(xlUp).Row
+     
+        Set obj = New WshShell
+    
+        For i = first_row To last_row
+            'コピー元パス
+            sParam1 = .Cells(i, 1)
+            'コピー先パス
+            sParam2 = .Cells(i, 2)
+            
+            'マッチ実行
+            Set matches = regex.Execute(sParam2)
+            
+            For Each match In matches
+                '引数3にコピー先パスのディレクトリ名を設定
+                sParam3 = Left(match.submatches(0), Len(match.submatches(0)) - 1)
+            Next match
+            
+            sPath = ThisWorkbook.Path & "\copyM.bat" & " " & sParam1 & " " & sParam2 & " " & sParam3
+            'WaitOnReturn:=Trueで同期(バッチの処理が終わってからVBAを実行する)
+            Call obj.Run(sPath, WaitOnReturn:=True)
+        Next i
+        
+        MsgBox "完了"
+    
+    End With
+      
+End Sub
