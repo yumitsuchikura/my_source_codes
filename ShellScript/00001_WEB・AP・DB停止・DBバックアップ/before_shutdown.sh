@@ -10,9 +10,9 @@ sudo systemctl stop tomcat.service
 
 # MariaDB接続設定
 DBHOST="127.0.0.1"
-DBUSER="tsuchi"
-DBPASS="tsuchi"
-DBNAME="tsuchi_kakeibo"
+DBUSER="XXXXX"
+DBPASS="XXXXX"
+DBNAME="XXXXX"
 
 # DBバックアップ設定
 BACKUP_DIR="/tmp/db_backup"
