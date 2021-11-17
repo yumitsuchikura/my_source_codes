@@ -1,5 +1,5 @@
 #!/bin/bash
-# EC2: kakeibo-web (35.75.156.133)
+# EC2: kakeibo-web
 # 格納パス: /home/ec2-user/sh/before_shutdown.sh
 
 # WEBサーバ停止
